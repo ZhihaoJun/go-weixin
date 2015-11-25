@@ -20,7 +20,7 @@ type AccessTokenResponse struct {
     OpenId string `json:"openid"`
     Scope string `json:"scope"`
     UnionId string `json:"unionid"`
-    Errcode string `json:"errcode"`
+    Errcode int64 `json:"errcode"`
     Errmsg string `json:"errmsg"`
 }
 
@@ -41,7 +41,7 @@ type UserInfoResponse struct {
     Headimgurl string `json:"headimgurl"`
     Privilege []string `json:"privilege"`
     UnionId string `json:"unionid"`
-    Errcode string `json:"errcode"`
+    Errcode int64 `json:"errcode"`
     Errmsg string `json:"errmsg"`
 }
 
@@ -89,8 +89,8 @@ func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
     return &response, nil
 }
 
-func (wx *Weixin) GetUserInfo(accessToken string, openid string) (*UserInfoResponse, error) {
-    url := fmt.Sprintf(getUserInfo, accessToken, OpenId)
+func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoResponse, error) {
+    url := fmt.Sprintf(getUserInfo, accessToken, openId)
     log.Println("get user info request url %s", url)
     resp, err := http.Get(url)
     if err != nil {
