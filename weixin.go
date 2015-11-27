@@ -15,7 +15,7 @@ type Weixin struct {
 
 type AccessTokenResponse struct {
     AccessToken string `json:"access_token"`
-    ExpiresIn string `json:"expires_in"`
+    ExpiresIn int64 `json:"expires_in"`
     RefreshToken string `json:"refresh_token"`
     OpenId string `json:"openid"`
     Scope string `json:"scope"`
@@ -64,7 +64,7 @@ func (wx *Weixin) WebAuthRedirectURL(redirectURI string, scope string, state str
 
 func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
     url := fmt.Sprintf(getWebAccessToken, wx.AppId, wx.AppSecret, code)
-    log.Println("get web access token request url: %s", url)
+    log.Println("get web access token request url: ", url)
     resp, err := http.Get(url)
     if err != nil {
         log.Println("failed to request url")
@@ -77,7 +77,7 @@ func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
         log.Println("failed to read response body")
         return nil, err
     }
-    log.Println("response body is %s", string(body))
+    log.Println("response body is ", string(body))
     
     var response AccessTokenResponse
     err = json.Unmarshal(body, &response)
@@ -85,13 +85,13 @@ func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
         log.Println("failed to parse body to json")
         return nil, err
     }
-    log.Println("body json response is %v", response)
+    log.Printf("body json response is %v\n", response)
     return &response, nil
 }
 
 func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoResponse, error) {
     url := fmt.Sprintf(getUserInfo, accessToken, openId)
-    log.Println("get user info request url %s", url)
+    log.Println("get user info request url: ", url)
     resp, err := http.Get(url)
     if err != nil {
         log.Println("failed to request url")
@@ -104,7 +104,7 @@ func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoRespo
         log.Println("failed to read response body")
         return nil, err
     }
-    log.Println("response body is %s", string(body))
+    log.Println("response body is ", string(body))
 
     var response UserInfoResponse
     err = json.Unmarshal(body, &response)
@@ -112,6 +112,6 @@ func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoRespo
         log.Println("failed to parse body to json")
         return nil, err
     }
-    log.Println("body json response is %v", response)
+    log.Printf("body json response is %v\n", response)
     return &response, nil
 }
