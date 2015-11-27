@@ -77,7 +77,7 @@ func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
         log.Println("failed to read response body")
         return nil, err
     }
-    log.Println("response body is %s", body)
+    log.Println("response body is %s", string(body))
     
     var response AccessTokenResponse
     err = json.Unmarshal(body, &response)
@@ -85,7 +85,7 @@ func (wx *Weixin) GetWebAccessToken(code string) (*AccessTokenResponse, error) {
         log.Println("failed to parse body to json")
         return nil, err
     }
-    log.Println("body json response is %s", response)
+    log.Println("body json response is %v", response)
     return &response, nil
 }
 
@@ -104,7 +104,7 @@ func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoRespo
         log.Println("failed to read response body")
         return nil, err
     }
-    log.Println("response body is %s", body)
+    log.Println("response body is %s", string(body))
 
     var response UserInfoResponse
     err = json.Unmarshal(body, &response)
@@ -112,6 +112,6 @@ func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoRespo
         log.Println("failed to parse body to json")
         return nil, err
     }
-    log.Println("body json response is %s", response)
+    log.Println("body json response is %v", response)
     return &response, nil
 }
