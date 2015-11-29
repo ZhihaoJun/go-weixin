@@ -6,6 +6,7 @@ import (
     "encoding/json"
     "net/http"
     "io/ioutil"
+    "crypto/sha1"
 )
 
 type Weixin struct {
@@ -57,6 +58,13 @@ const (
     getWebAccessToken = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code"
     getUserInfo = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN"
 )
+
+func New(appId string, appSecret string) Weixin {
+    return Weixin{
+        AppId: appId,
+        AppSecret: appSecret,
+    }
+}
 
 func (wx *Weixin) WebAuthRedirectURL(redirectURI string, scope string, state string) string {
     return fmt.Sprintf(webAuthRedirectURL, wx.AppId, redirectURI, scope, state)
@@ -114,4 +122,9 @@ func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoRespo
     }
     log.Printf("body json response is %v\n", response)
     return &response, nil
+}
+
+func (wx *Weixin) JSSDKSignature(jssdkTicket string, noncestr string, timestamp int64, url string) string {
+    string1 := fmt.Sprintf("jsapi_ticket=%s&noncestr=%s&timestamp=%d&url=%s", jssdkTicket, noncestr, timestamp, url)
+    return fmt.Sprintf("%x", sha1.Sum([]byte(string1)))
 }
