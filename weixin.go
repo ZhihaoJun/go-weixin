@@ -5,6 +5,7 @@ import (
     "log"
     "encoding/json"
     "net/http"
+    "net/url"
     "io/ioutil"
     "crypto/sha1"
 )
@@ -97,7 +98,8 @@ func New(appId string, appSecret string) Weixin {
 }
 
 func (wx *Weixin) WebAuthRedirectURL(redirectURI string, scope string, state string) string {
-    return fmt.Sprintf(webAuthRedirectURL, wx.AppId, redirectURI, scope, state)
+    redirectURIEscaped := url.QueryEscape(redirectURI)
+    return fmt.Sprintf(webAuthRedirectURL, wx.AppId, redirectURIEscaped, scope, state)
 }
 
 func (wx *Weixin) GetJSSDKTicket(accessToken string) (*JSSDKTicketResponse, error) {
