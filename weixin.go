@@ -102,112 +102,95 @@ func (wx *Weixin) WebAuthRedirectURL(redirectURI string, scope string, state str
     return fmt.Sprintf(webAuthRedirectURL, wx.AppId, redirectURIEscaped, scope, state)
 }
 
-func (wx *Weixin) GetJSSDKTicket(accessToken string) (*JSSDKTicketResponse, error) {
+func requestGet(url string) ([]byte, error) {
+    log.Println("get response on url: ", url)
+    resp, err := http.Get(url)
+    if err != nil {
+        log.Println("failed to get url")
+        return nil, err
+    }
+    defer resp.Body.Close()
+
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        log.Println("failed to read response body")
+        return nil, err
+    }
+    log.Println("response body is ", string(body))
+
+    return body, nil
+}
+
+func (wx *Weixin) GetJSSDKTicket(accessToken string) (JSSDKTicketResponse, error) {
+    var response JSSDKTicketResponse
     url := fmt.Sprintf(getJSSDKTicket, accessToken)
     log.Println("get access token request url: ", url)
-    resp, err := http.Get(url)
+    body, err := requestGet(url)
     if err != nil {
-        log.Println("failed to request url")
-        return nil, err
+        return response, err
     }
-    defer resp.Body.Close()
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Println("failed to read response body")
-        return nil, err
-    }
-    log.Println("response body is ", string(body))
-
-    var response JSSDKTicketResponse
     err = json.Unmarshal(body, &response)
     if err != nil {
         log.Println("failed to parse body to json")
-        return nil, err
+        return response, err
     }
     log.Printf("body json response is %v\n", response)
-    return &response, nil
+    return response, nil
 }
 
-func (wx *Weixin) GetAccessToken() (*AccessTokenResponse, error) {
+func (wx *Weixin) GetAccessToken() (AccessTokenResponse, error) {
+    var response AccessTokenResponse
     url := fmt.Sprintf(getAccessToken, wx.AppId, wx.AppSecret)
     log.Println("get access token request url: ", url)
-    resp, err := http.Get(url)
+    body, err := requestGet(url)
     if err != nil {
-        log.Println("failed to request url")
-        return nil, err
+        return response, err
     }
-    defer resp.Body.Close()
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Println("failed to read response body")
-        return nil, err
-    }
-    log.Println("response body is ", string(body))
-
-    var response AccessTokenResponse
     err = json.Unmarshal(body, &response)
     if err != nil {
         log.Println("failed to parse body to json")
-        return nil, err
+        return response, err
     }
     log.Printf("body json response is %v\n", response)
-    return &response, nil
+    return response, nil
 }
 
-func (wx *Weixin) GetWebAccessToken(code string) (*WebAccessTokenResponse, error) {
+func (wx *Weixin) GetWebAccessToken(code string) (WebAccessTokenResponse, error) {
+    var response WebAccessTokenResponse
     url := fmt.Sprintf(getWebAccessToken, wx.AppId, wx.AppSecret, code)
     log.Println("get web access token request url: ", url)
-    resp, err := http.Get(url)
+    body, err := requestGet(url)
     if err != nil {
-        log.Println("failed to request url")
-        return nil, err
+        return response, err
     }
-    defer resp.Body.Close()
     
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Println("failed to read response body")
-        return nil, err
-    }
-    log.Println("response body is ", string(body))
-    
-    var response WebAccessTokenResponse
     err = json.Unmarshal(body, &response)
     if err != nil {
         log.Println("failed to parse body to json")
-        return nil, err
+        return response, err
     }
     log.Printf("body json response is %v\n", response)
-    return &response, nil
+    return response, nil
 }
 
-func (wx *Weixin) GetUserInfo(accessToken string, openId string) (*UserInfoResponse, error) {
+func (wx *Weixin) GetUserInfo(accessToken string, openId string) (UserInfoResponse, error) {
+    var response UserInfoResponse
     url := fmt.Sprintf(getUserInfo, accessToken, openId)
     log.Println("get user info request url: ", url)
-    resp, err := http.Get(url)
+    body, err := requestGet(url)
     if err != nil {
-        log.Println("failed to request url")
-        return nil, err
+        return response, err
     }
-    defer resp.Body.Close()
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        log.Println("failed to read response body")
-        return nil, err
-    }
-    log.Println("response body is ", string(body))
-
-    var response UserInfoResponse
     err = json.Unmarshal(body, &response)
     if err != nil {
         log.Println("failed to parse body to json")
-        return nil, err
+        return response, err
     }
     log.Printf("body json response is %v\n", response)
-    return &response, nil
+    return response, nil
 }
 
 func (wx *Weixin) JSSDKSignature(jssdkTicket string, noncestr string, timestamp int64, url string) string {

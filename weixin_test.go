@@ -1,6 +1,7 @@
 package weixin
 
 import (
+    "fmt"
     "testing"
 )
 
@@ -10,4 +11,11 @@ func TestJSSDKSignature(t *testing.T) {
     if result != "0f9de62fce790f9a083d5c99e95740ceb90c27ed" {
         t.Errorf("not right result: %q", result)
     }
+}
+
+func TestGetWebAccessToken(t *testing.T) {
+    wx := Weixin{"",""}
+    result, err := wx.GetWebAccessToken("123123")
+    fmt.Println(result)
+    fmt.Println(err)
 }
